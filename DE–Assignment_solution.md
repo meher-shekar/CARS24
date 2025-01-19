@@ -1,4 +1,4 @@
-1. Write a query to return Territory and corresponding Sales Growth. Compare growth between periods Q4-2021 vs Q3-2021. If Territory (say T123) has Sales worth 100 in Q3-2021 and Sales worth 110 in Q4-2021, then the Sales Growth will be 10% [ i.e. = ((110 - 100)/100) * 100 ] Output the ID of the Territory and the Sales Growth. Only output these territories that had any sales in both quarters.
+**Que 1. Write a query to return Territory and corresponding Sales Growth. Compare growth between periods Q4-2021 vs Q3-2021. If Territory (say T123) has Sales worth 100 in Q3-2021 and Sales worth 110 in Q4-2021, then the Sales Growth will be 10% [ i.e. = ((110 - 100)/100) * 100 ] Output the ID of the Territory and the Sales Growth. Only output these territories that had any sales in both quarters.**
 
 Table: fct_customer_sales
 | Column | DataType |
@@ -60,7 +60,7 @@ WHERE
 	Sales_growth IS NOT NULL;
 ```
 
-2. Definition of _**Frequent Customer**_: _A Customer who has transacts on the platform at least once in every 5 days since last transaction._
+**Que 2. Definition of _**Frequent Customer**_: _A Customer who has transacts on the platform at least once in every 5 days since last transaction._**
 
 ```SQL
 CREATE TABLE SALES (
@@ -91,8 +91,8 @@ VALUES
     (10017, 90002, 10000, '2022-02-21 09.00.00'),
     (10019, 90002, 10000, '2022-02-28 09.00.00');
 ```
-- Write a SQL query for below questions:
-    - Find which customers are Frequent.
+- **Write a SQL query for below questions:**
+    - **Find which customers are Frequent.**
     ```SQL
     -- Using partition by clause to find days difference between 2 purchases.
     WITH customer_days_diff AS (
@@ -112,7 +112,7 @@ VALUES
     HAVING
         MAX(days_diff) <= 5;
     ```
-    - Evaluate cumulative sum of ORDER_VALUE for each customer in ascending order of ORDER_DATE.
+    - **Evaluate cumulative sum of ORDER_VALUE for each customer in ascending order of ORDER_DATE.**
     ```SQL
     SELECT
         ORDER_ID,
@@ -130,7 +130,7 @@ VALUES
         CUSTOMER_ID,
         ORDER_DATE;
     ```
-    - Order IDs which constitute Top 80 percentile basis Order_Value.
+    - **Order IDs which constitute Top 80 percentile basis Order_Value.**
     ```SQL
     WITH RankedOrders AS (
     SELECT
@@ -148,83 +148,117 @@ VALUES
         PERCENTILE_RANK >= 0.8;
     ```
 
-    - Create a coupon_flag which becomes active on alternate transactions, signifying availability of coupon. Assume coupon_flag is 1 (Active) on first transaction, find number of days an offer was valid for each customer.
-        - Because of mis understanding providing 2 solutions.
-            - Case 1: considering coupon is used in first transaction so it will be inactive till next transaction and on 2nd transaction customer will again get a valid coupon to use it for next transaction.
-            ```SQL
-            WITH coupon_flags AS (
-            SELECT
-                ORDER_ID,
-                CUSTOMER_ID,
-                date(ORDER_DATE) AS ORDER_DATE,
-                CASE
-                    WHEN ROW_NUMBER() OVER ( PARTITION BY CUSTOMER_ID
-                ORDER BY
-                    ORDER_DATE ) % 2 = 1 THEN 1
-                    ELSE 0
-                END AS coupon_flag,
-                datediff(ORDER_DATE, LAG(ORDER_DATE) OVER (PARTITION BY CUSTOMER_ID ORDER BY ORDER_DATE)) AS coupon_active_days
-            FROM
-                SALES)
-            SELECT
-                CUSTOMER_ID,
-                SUM(coupon_active_days) AS coupon_active_days
-            FROM
-                coupon_flags
-            WHERE
-                coupon_flag = 0
-            GROUP BY
-                customer_id;
-            ```
-            - Case 2: considering coupon is generated in first transaction so it will be active till next transaction and on 2nd transaction coupon will be invalid.
-            ```SQL
-            WITH coupon_flags AS (
-            SELECT
-                ORDER_ID,
-                CUSTOMER_ID,
-                date(ORDER_DATE) AS ORDER_DATE,
-                CASE
-                    WHEN ROW_NUMBER() OVER ( PARTITION BY CUSTOMER_ID
-                ORDER BY
-                    ORDER_DATE ) % 2 = 1 THEN 1
-                    ELSE 0
-                END AS coupon_flag,
-                datediff(ORDER_DATE, LAG(ORDER_DATE) OVER (PARTITION BY CUSTOMER_ID ORDER BY ORDER_DATE)) AS coupon_active_days
-            FROM
-                SALES)
-            SELECT
-                CUSTOMER_ID,
-                SUM(coupon_active_days) AS coupon_active_days
-            FROM
-                coupon_flags
-            WHERE
-                coupon_flag = 1
-            GROUP BY
-                customer_id;
-            ```
+    - **Create a coupon_flag which becomes active on alternate transactions, signifying availability of coupon. Assume coupon_flag is 1 (Active) on first transaction, find number of days an offer was valid for each customer.**
+        - **Case 1:** _considering coupon is used in first transaction so it will be inactive till next transaction and on 2nd transaction customer will again get a valid coupon to use it for next transaction._
+        ```SQL
+        WITH coupon_flags AS (
+        SELECT
+            ORDER_ID,
+            CUSTOMER_ID,
+            date(ORDER_DATE) AS ORDER_DATE,
+            CASE
+                WHEN ROW_NUMBER() OVER ( PARTITION BY CUSTOMER_ID
+            ORDER BY
+                ORDER_DATE ) % 2 = 1 THEN 1
+                ELSE 0
+            END AS coupon_flag,
+            datediff(ORDER_DATE, LAG(ORDER_DATE) OVER (PARTITION BY CUSTOMER_ID ORDER BY ORDER_DATE)) AS coupon_active_days
+        FROM
+            SALES)
+        SELECT
+            CUSTOMER_ID,
+            SUM(coupon_active_days) AS coupon_active_days
+        FROM
+            coupon_flags
+        WHERE
+            coupon_flag = 0
+        GROUP BY
+            customer_id;
+        ```
+        - **Case 2:** _considering coupon is generated in first transaction so it will be active till next transaction and on 2nd transaction coupon will be invalid._
+        ```SQL
+        WITH coupon_flags AS (
+        SELECT
+            ORDER_ID,
+            CUSTOMER_ID,
+            date(ORDER_DATE) AS ORDER_DATE,
+            CASE
+                WHEN ROW_NUMBER() OVER ( PARTITION BY CUSTOMER_ID
+            ORDER BY
+                ORDER_DATE ) % 2 = 1 THEN 1
+                ELSE 0
+            END AS coupon_flag,
+            datediff(ORDER_DATE, LAG(ORDER_DATE) OVER (PARTITION BY CUSTOMER_ID ORDER BY ORDER_DATE)) AS coupon_active_days
+        FROM
+            SALES)
+        SELECT
+            CUSTOMER_ID,
+            SUM(coupon_active_days) AS coupon_active_days
+        FROM
+            coupon_flags
+        WHERE
+            coupon_flag = 1
+        GROUP BY
+            customer_id;
+        ```
 
-3. Consider the flight dataset attached. Write a Python code block to find all the travel options a passenger can take, along with flight details for the input Delhi (origin) to Mumbai (destination).
-    - **Using graph**
+**Que 3. Consider the flight dataset attached. Write a Python code block to find all the travel options a passenger can take, along with flight details for the input Delhi (origin) to Mumbai (destination).**
+
+**Imports**
+```python
+from collections import defaultdict, deque
+
+import pandas as pd
+
+# Inputs
+origin = "Delhi"
+destination = "Mumbai"
+
+flights_df = pd.read_csv("./Flight Details.csv")
+```
+
+**Methods to calculate stops and time**
+```python
+def format_time(minutes):
+    hours = minutes // 100
+    mins = minutes % 100
+    return f"{hours:02}:{mins:02}"
+
+def calculate_total_duration(route):
+    start_time = route[0]["StartTime"]
+    end_time = route[-1]["EndTime"]
+    duration = (end_time // 100 - start_time // 100) * 60 + (
+        end_time % 100 - start_time % 100
+    )
+    return duration
+
+def format_route(route):
+    stops = len(route) - 1
+    stop_details = (
+        "Direct"
+        if stops == 0
+        else f"{stops} Stop(s) ({', '.join([f['Destination'] for f in route[:-1]])})"
+    )
+    total_duration = calculate_total_duration(route)
+    return f"{route[0]['Origin'].strip()} - {route[-1]['Destination'].strip()} >> {total_duration // 60} hours {total_duration % 60} mins >> {stop_details}"
+
+```
+- **Using graph**
     ```Python
-    import pandas as pd
-    from collections import defaultdict, deque
-
-    df = pd.read_csv("Flight Details.csv")
-
     def find_routes(origin, destination, flights):
         # Build a graph of routes
         graph = defaultdict(list)
         for _, row in flights.iterrows():
-            graph[row["Origin"]].append(
+            graph[row["Origin"].strip()].append(
                 {
                     "FlightNumber": row["FlightNumber"],
-                    "Destination": row["Destination"],
+                    "Destination": row["Destination"].strip(),
+                    "Origin": row["Origin"].strip(),
                     "StartTime": row["StartTime"],
                     "EndTime": row["EndTime"],
                 }
             )
 
-        # BFS to find all paths
         results = []
         queue = deque([(origin, [], 0)])
 
@@ -239,34 +273,27 @@ VALUES
                     flight["StartTime"] >= last_end_time
                 ):  # Check for valid connection timing
                     queue.append(
-                        (flight["Destination"], path + [flight], flight["EndTime"])
+                        (flight["Destination"].strip(), path + [flight], flight["EndTime"])
                     )
 
         return results
 
+    travel_options = find_routes(origin, destination, flights_df)
 
-    # Find routes from Delhi to Mumbai
-    origin = " Delhi"
-    destination = " Mumbai"
-    travel_options = find_routes(origin, destination, df)
-
-    # Display results
-    for i, option in enumerate(travel_options, start=1):
-        print(f"Option {i}:")
-        for flight in option:
-            print(
-                f"  Flight {flight['FlightNumber']} from {origin} to {flight['Destination']} ({flight['StartTime']} - {flight['EndTime']})"
-            )
-        print()
+    # Display travel options
+    if travel_options:
+        for i, option in enumerate(travel_options, start=1):
+            print(f"Option {i}:\n\t{format_route(option)}")
+            for flight in option:
+                print(
+                    f"\tFlight {flight['FlightNumber']} from {flight['Origin'].strip()} to {flight['Destination'].strip()} ({format_time(flight['StartTime'])} - {format_time(flight['EndTime'])})"
+                )
+    else:
+        print(f"No travel options available from {origin} to {destination}.")
     ```
 
-    - **Without using graph**
-
+- **Without using graph**
     ```python
-    import pandas as pd
-
-    flights_df = pd.read_csv("Flight Details.csv")
-
     def find_travel_options(flights, origin, destination):
         flights = flights.to_dict(orient="records")
         results = []
@@ -276,7 +303,7 @@ VALUES
             current_route.append(current_flight)
 
             # Check if we reached the destination
-            if current_flight["Destination"] == destination:
+            if current_flight["Destination"].strip() == destination:
                 results.append(list(current_route))
                 current_route.pop()  # Backtrack for other options
                 return
@@ -284,7 +311,7 @@ VALUES
             # Find connecting flights
             for flight in flights:
                 if (
-                    flight["Origin"] == current_flight["Destination"]
+                    flight["Origin"].strip() == current_flight["Destination"].strip()
                     and flight["StartTime"] > current_flight["EndTime"]
                 ):
                     find_routes(current_route, flight)
@@ -294,58 +321,27 @@ VALUES
 
         # Find all starting flights from the origin
         for flight in flights:
-            if flight["Origin"] == origin:
+            if flight["Origin"].strip() == origin:
                 find_routes([], flight)
 
         return results
 
-
-    def format_time(minutes):
-        hours = minutes // 100
-        mins = minutes % 100
-        return f"{hours:02}:{mins:02}"
-
-
-    def calculate_total_duration(route):
-        start_time = route[0]["StartTime"]
-        end_time = route[-1]["EndTime"]
-        duration = (end_time // 100 - start_time // 100) * 60 + (
-            end_time % 100 - start_time % 100
-        )
-        return duration
-
-
-    def format_route(route):
-        stops = len(route) - 1
-        stop_details = (
-            "Direct"
-            if stops == 0
-            else f"{stops} Stop(s) ({', '.join([f['Destination'] for f in route[:-1]])})"
-        )
-        total_duration = calculate_total_duration(route)
-        return f"{route[0]['Origin']} - {route[-1]['Destination']} >> {total_duration // 60} hours {total_duration % 60} mins >> {stop_details}"
-
-
-    # Inputs
-    origin = " Delhi"
-    destination = " Mumbai"
-
     # Get travel options
     travel_options = find_travel_options(flights_df, origin, destination)
 
-    # Print results
+    # Display travel options
     if travel_options:
         for i, option in enumerate(travel_options, start=1):
             print(f"Option {i}:\n\t{format_route(option)}")
             for flight in option:
                 print(
-                    f"\tFlight {flight['FlightNumber']} from {flight['Origin']} to {flight['Destination']} ({format_time(flight['StartTime'])} - {format_time(flight['EndTime'])})"
+                    f"\tFlight {flight['FlightNumber']} from {flight['Origin'].strip()} to {flight['Destination'].strip()} ({format_time(flight['StartTime'])} - {format_time(flight['EndTime'])})"
                 )
     else:
         print(f"No travel options available from {origin} to {destination}.")
     ```
 
-4. Write a python program to flatten a nested JSON to list all the available nic into dataframe. Use below JSON data for reference.
+**Que 4. Write a python program to flatten a nested JSON to list all the available nic into dataframe. Use below JSON data for reference.**
 ```json
 {
     "count": 13,
@@ -412,7 +408,7 @@ nic_df = pd.json_normalize(
 )
 ```
 
-5. Design a compute resource for given problem statement. The Marketing team are running campaigns online and all the user experiences are captured via Google Analytics which is replicated into Google BigQuery.  The BI analyst has gathered all the sales history data into Snowflake data warehouse. How and where can the analyst combine these two datasets in order to identify possible leads for the business? You need to suggest a platform or compute instance where both the sources can be queried together and tables can be joined to find out recent sellers visiting the advertisements surfing through all the buying options.
+**Que 5. Design a compute resource for given problem statement. The Marketing team are running campaigns online and all the user experiences are captured via Google Analytics which is replicated into Google BigQuery.  The BI analyst has gathered all the sales history data into Snowflake data warehouse. How and where can the analyst combine these two datasets in order to identify possible leads for the business? You need to suggest a platform or compute instance where both the sources can be queried together and tables can be joined to find out recent sellers visiting the advertisements surfing through all the buying options.**
 
 
 **Solution:**
