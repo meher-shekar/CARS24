@@ -1,0 +1,34 @@
+Que 5. Design a compute resource for given problem statement.
+The Marketing team are running campaigns online and all the user experiences are captured via Google Analytics which is replicated into Google BigQuery. The BI analyst has gathered all the sales history data into Snowflake data warehouse.
+How and where can the analyst combine these two datasets in order to identify possible leads for the business?
+You need to suggest a platform or compute instance where both the sources can be queried together and tables can be joined to find out recent sellers visiting the advertisements surfing through all the buying options.
+
+Solution:
+We can design a solution using AWS Glue, Amazon S3, Amazon Redshift, Amazon Athena, and Amazon QuickSight. 
+
+Step 1: Extract Data from Google BigQuery (Google BigQuery -> Amazon S3)
+Use AWS Glue to connect to Google BigQuery using JDBC and extract the user experience data.
+Configure AWS Glue Crawlers to catalog the schema of the extracted BigQuery data in the AWS Glue Data Catalog.
+Store the extracted data in Amazon S3 in a structured format.
+
+Step 2: Extract Data from Snowflake (Snowflake -> Amazon S3)
+Use AWS Glue to connect to Snowflake using JDBC and extract the sales data.
+Similarly, use AWS Glue Crawlers to catalog the Snowflake data into the AWS Glue Data Catalog.
+Store the extracted Snowflake data in Amazon S3 in a structured format.
+
+Step 3: Data Analysis and Combination
+
+Option 1: Amazon Redshift
+Load the data stored in Amazon S3 into Amazon Redshift using the COPY command.
+Create tables or views in Redshift to join and analyze the data from both sources.
+Perform SQL queries in Redshift to generate insights in order to identify possible leads for the business.
+
+Option 2: Amazon Athena
+Alternatively, we can use Amazon Athena to query the data directly from Amazon S3 without moving it to Redshift.
+Configure Athena tables using the schema stored in the AWS Glue Data Catalog.
+Write SQL queries in Athena to join the datasets to identify potential leads.
+This approach avoids the need for an additional data warehouse, making it cost-effective.
+
+Step 4: Visualization and Reporting
+Use Amazon QuickSight to connect to either Amazon Redshift or Amazon Athena for creating visualizations and dashboards.
+we can build an interactive dashboards to present insights to stakeholders, enabling the Marketing team to track campaign performance and identify leads effectively.

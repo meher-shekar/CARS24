@@ -1,0 +1,8 @@
+﻿FlightNumber,date,Origin,Destination,StartTime,EndTime
+B99,24-04-2023, Delhi, Mumbai,830,1015
+B89,24-04-2023, Delhi, Jaipur,845,1045
+B69,24-04-2023, Jaipur, Mumbai,1130,1330
+B79,24-04-2023, Delhi, Agra,815,1130
+B59,24-04-2023, Agra, Surat,1230,1430
+B59,24-04-2023, Surat, Pune,1445,1530
+B39,24-04-2023, Pune, Mumbai,1630,1730
