@@ -406,6 +406,7 @@ nic_df = pd.json_normalize(
     },
     inplace=True,
 )
+print(nic_df)
 ```
 
 **Que 5. Design a compute resource for given problem statement. The Marketing team are running campaigns online and all the user experiences are captured via Google Analytics which is replicated into Google BigQuery.  The BI analyst has gathered all the sales history data into Snowflake data warehouse. How and where can the analyst combine these two datasets in order to identify possible leads for the business? You need to suggest a platform or compute instance where both the sources can be queried together and tables can be joined to find out recent sellers visiting the advertisements surfing through all the buying options.**
