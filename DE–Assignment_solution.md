@@ -438,6 +438,6 @@ We can design a solution using AWS Glue, Amazon S3, Amazon Redshift, Amazon Athe
 - Write SQL queries in Athena to join the datasets to identify potential leads.
 - This approach avoids the need for an additional data warehouse, making it cost-effective.
 
-**Step 4: _Visualization and Reporting_**
+**Step 4: _Visualization and Reporting (Amazon Redshift -> Amazon QuickSight)_**
 - Use Amazon QuickSight to connect to either Amazon Redshift or Amazon Athena for creating visualizations and dashboards.
 - we can build an interactive dashboards to present insights to stakeholders, enabling the Marketing team to track campaign performance and identify leads effectively.
