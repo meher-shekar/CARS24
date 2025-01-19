@@ -425,7 +425,7 @@ We can design a solution using AWS Glue, Amazon S3, Amazon Redshift, Amazon Athe
 - Similarly, use AWS Glue Crawlers to catalog the Snowflake data into the AWS Glue Data Catalog.
 - Store the extracted Snowflake data in Amazon S3 in a structured format.
 
-**Step 3: _Data Analysis and Combination_**
+**Step 3: _Data Analysis and Combination (Amazon S3 -> Redshift or Athena)_**
 
 **Option 1:** _Amazon Redshift_
 - Load the data stored in Amazon S3 into Amazon Redshift using the COPY command.
